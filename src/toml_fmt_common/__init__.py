@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -211,7 +211,11 @@ def _build_cli(of: TOMLFormatter[T]) -> tuple[ArgumentParser, Mapping[str, Calla
         metavar="count",
     )
     of.add_format_flags(format_group)
-    type_conversion = {a.dest: a.type for a in format_group._actions if a.type and a.dest}  # noqa: SLF001
+    type_conversion: Mapping[str, Callable[[Any], Any]] = {
+        a.dest: cast("Callable[[Any], Any]", a.type)
+        for a in format_group._actions  # noqa: SLF001
+        if a.type and a.dest
+    }
     msg = "pyproject.toml file(s) to format, use '-' to read from stdin"
     parser.add_argument(
         "inputs",
