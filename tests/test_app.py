@@ -279,3 +279,14 @@ def test_dumb_path_no_write(capsys: pytest.CaptureFixture[str], tmp_path: Path) 
     out, err = capsys.readouterr()
     assert "\ntoml-fmt-common: error: argument inputs: cannot write path\n" in err
     assert not out
+
+
+def test_writes_lf_line_endings(tmp_path: Path) -> None:
+    dumb = tmp_path / "dumb.toml"
+    dumb.write_text("")
+
+    run(Dumb(), ["E", str(dumb)])
+
+    raw = dumb.read_bytes()
+    assert b"\r\n" not in raw
+    assert b"\n" in raw
