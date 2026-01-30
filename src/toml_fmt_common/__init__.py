@@ -264,7 +264,7 @@ def _handle_one(info: TOMLFormatter[T], config: _Config[T]) -> bool:
         return changed
 
     if before != formatted and not config.check:
-        config.toml_filename.write_text(formatted, encoding="utf-8")
+        config.toml_filename.write_text(formatted, encoding="utf-8", newline="\n")
     if config.no_print_diff:
         return changed
     try:
